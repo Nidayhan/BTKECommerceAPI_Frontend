@@ -1,65 +1,104 @@
+"use client";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { Parent } from "./Components/Parent";
 
 export default function Home() {
+
+
+  const [count, setCount] = useState(0);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const router = useRouter();
+  const [name, setName] = useState("");
+  const [users,setUsers] = useState([
+    {id:1, name:'semih', exam1: 20, exam2: 30},
+    {id:2, name:'zeynep',  exam1: 40, exam2: 50},
+    {id:3, name:'nida',  exam1: 100, exam2: 100}
+  ])
+
+
+  const goToLoginPage = () => {
+    router.push("/Login");
+  }
+
+  useEffect(()=>{
+    console.log("Companenet Mounted");
+  },[])
+
+  useEffect(()=>{
+    console.log("when changed count trigger this", count);
+  },[count])
+
+  function Sum(text: String,a:number,b:number) {
+    return text + ": " + (a + b);
+  }
+
+  const multiple = (a:number,b:number) => {
+    return a*b;
+  }
+  
+  const bolme = (a:number, b:number) =>
+  {
+    return a/b;
+  }
+
+  function ort(text: String, exam1:number, exam2:number){
+    return text + ":" + (exam1 + exam2)/2;
+  }
+
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+       <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+    
+      <Parent></Parent>
+      
+      <button onClick={()=>setCount((x)=>x-1)}> decrement</button>
+
+      <button onClick={goToLoginPage}> Login page</button>
+
+      <button onClick={()=> router.push("/Products/33")}>Go Details</button>
+
+
+      {
+        !isLoggedIn && <div style={{color:'green'}}> Welcome User! </div>
+      }
+
+      { isLoggedIn ? <div style={{color:'blue'}}> You are logged in </div> : <div style={{color:'red'}}> Please log in </div>}
+
+     <input onChange={(e) => setName(e.target.value)} ></input>
+     <h5>your name is: {name} </h5>
+
+
+<ul>
+      {
+          users.map((user) => (
+          <li key = {user.id} >{user.name} {ort("ortalaması: ", user.exam1,user.exam2)}</li>
+        ))
+      }
+</ul>
+      
+       
+
+
+      <h1 ref={inputRef} style={{color:'red'}}> {count} </h1>
+
+      <button onClick={()=>setCount((x)=>x+1)}> Increment</button>
+
+      <button onClick={()=>{
+        if(inputRef.current){
+          inputRef.current.style.color = 'orange';
+        }
+      }}> change color </button>
+
+      <div className="mt-10" style={{color:'red'}}>
+        <h2> {Sum("Sum of 5 and 10 is: ",5,10)} </h2>
+        <h2> Multiple of 5 and 10 is: {multiple(5,10)}</h2>
+        <h3> bolme işlemi: {bolme(5,10)}</h3>
+
+      </div>
+
+       </div>
   );
 }
