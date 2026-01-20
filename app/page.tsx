@@ -7,10 +7,11 @@ import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { fetchCategories } from "@/lib/redux/features/categorySlice";
 import Link from "next/link";
 import Navbar from "./Components/Navbar";
+import { fetchProductsByCategoryId } from "@/lib/redux/features/productSlice";
 export default function Home() {
   const dispatch = useAppDispatch();
   const categories = useAppSelector((state) => state.category);
-
+  const products = useAppSelector((state) => state.product);
 
   const [count,setCount] = useState(0);
   const router = useRouter();
@@ -26,16 +27,15 @@ export default function Home() {
   ])
 
 
-
-
   useEffect(()=>{
-    const fetchData = async () => {
-      await dispatch(fetchCategories()).unwrap();
-    };
-    fetchData();
+   dispatch(fetchCategories());
+   dispatch(fetchProductsByCategoryId());
   },[dispatch])
 
 
+  const filterForCategory = (categoryId:string|undefined) => {
+    dispatch(fetchProductsByCategoryId(categoryId));
+  }
 
 
 
@@ -109,51 +109,51 @@ useEffect(()=>{
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Kategoriler</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {categories.categories.data.map((category) => (
-                <Link
+                <div
                   key={category.id}
-                  href={`/products?category=${category.id}`}
+                  onClick={()=>filterForCategory(category.id)}
                   className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition text-center"
                 >
                   <h3 className="font-semibold text-gray-900">{category.categoryName}</h3>
                   <p className="text-sm text-gray-600 mt-2">{category.description}</p>
-                </Link>
+                </div>
               ))}
             </div>
           </div>
         )}
 
         {/* Featured Products */}
-        {/* <div>
+       <div>
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Öne Çıkan Ürünler</h2>
-          {isLoading ? (
+          {products.isLoading ? (
             <div className="text-center py-12">
               <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
             </div>
-          ) : products.length > 0 ? (
+          ) : products.products && products.products?.data.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {products.slice(0, 8).map((product) => (
+              {products.products?.data.slice(0, 8).map((product) => (
                 <Link
                   key={product.id}
                   href={`/products/${product.id}`}
                   className="bg-white rounded-lg shadow hover:shadow-xl transition overflow-hidden"
                 >
                   <div className="aspect-square bg-gray-200 relative">
-                    {product.images[0]?.imageUrl && (
+                    {product.productImages[0]?.imageUrl && (
                       <img
-                        src={`https://localhost:7000${product.images[0].imageUrl}`}
-                        alt={product.name}
+                        src={`https://localhost:7230${product.productImages[0]?.imageUrl}`}
+                        alt={product.productName}
                         className="w-full h-full object-cover"
                       />
                     )}
                   </div>
                   <div className="p-4">
-                    <h3 className="font-semibold text-gray-900 mb-2">{product.name}</h3>
-                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
+                    <h3 className="font-semibold text-gray-900 mb-2">{product.productName}</h3>
+                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.productDescription}</p>
                     <div className="flex justify-between items-center">
                       <span className="text-xl font-bold text-blue-600">
                         {product.price.toFixed(2)} ₺
                       </span>
-                      <span className="text-sm text-gray-500">{product.categoryName}</span>
+                      {/* <span className="text-sm text-gray-500">{product.categoryName}</span> */}
                     </div>
                   </div>
                 </Link>
@@ -164,7 +164,7 @@ useEffect(()=>{
               <p className="text-gray-500">Henüz ürün bulunmamaktadır.</p>
             </div>
           )}
-        </div> */}
+        </div> 
       </main>
     </div>
    
