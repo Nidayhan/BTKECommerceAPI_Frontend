@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
 
 function LoginPage(){
 
@@ -24,6 +25,7 @@ function LoginPage(){
       try{
         await dispatch(login(formData)).unwrap();
         router.push("/")
+        toast("Login işlemi başarılı. Hoşgeldiniz!");
       }catch(err)
       {
         console.error("Login Failed",err);

@@ -18,13 +18,6 @@ export default function Home() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isLoggedIn,setIsLoggedIn] = useState(true);
   const [name,setName] = useState("");
-  const [users,setUsers] = useState([
-    {id:1,name:'Semih',Exam1:90,Exam2:80},
-    {id:2,name:'Zeynep',Exam1:85,Exam2:95},
-    {id:3,name:'Nida',Exam1:78,Exam2:88},
-    {id:4,name:'Mahmut',Exam1:92,Exam2:81},
-    {id:5,name:'Onur',Exam1:74,Exam2:89},
-  ])
 
 
   useEffect(()=>{

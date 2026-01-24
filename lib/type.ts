@@ -59,5 +59,5 @@ export interface RegisterRequest{
     lastName: string, 
     userName: string, 
     password: string, 
-    confirmpassword: string
+    confirmPassword: string
 }

@@ -1,4 +1,4 @@
-import { LoginRequest, ResponseModel, User } from "@/lib/type";
+import { LoginRequest, RegisterRequest, ResponseModel, User } from "@/lib/type";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { api } from "../services/api";
 import {jwtDecode} from "jwt-decode"
@@ -43,6 +43,29 @@ export const login = createAsyncThunk(
         }
     }
 )
+
+
+
+export const register = createAsyncThunk(
+    'auth/register',
+    async (credentials:RegisterRequest,{rejectWithValue}) => {
+        try{
+
+            const response = await api.post<ResponseModel<User>>('/Auth/Register',credentials);
+            const user = response.data.data;
+            const decodedToken = jwtDecode(user.token);
+            const roles = (decodedToken as any).role as string[];
+            user.roles = Array.isArray(roles) ? roles : [roles]
+            localStorage.setItem("token",user.token);
+            localStorage.setItem("user",JSON.stringify(user))
+            return user;
+
+        }catch{
+            return rejectWithValue("Login Failed")
+        }
+    }
+)
+
 
 export const loadUserFromStorage = createAsyncThunk(
     'auth/loadUserFromStorage',
@@ -104,6 +127,17 @@ const authSlice = createSlice({
             state.user = action.payload.user;
             state.token = action.payload.token;
             state.isAuthenticated = true;
+        })
+         .addCase(register.fulfilled,(state,action:PayloadAction<User>) => {
+            state.isLoading = false;
+            state.user = action.payload;
+            state.token = action.payload.token;
+            state.isAuthenticated = true;
+        })
+        .addCase(register.rejected,(state,action) => {
+            state.isLoading = false;
+            state.error = action.payload as string;
+            state.isAuthenticated = false;
         })
     }
 })

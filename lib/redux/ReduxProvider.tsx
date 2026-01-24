@@ -4,6 +4,7 @@ import { Provider } from "react-redux";
 import { store } from "./store";
 import { useEffect } from "react";
 import { loadUserFromStorage } from "./features/authSlice";
+import { ToastContainer } from "react-toastify";
 
 export function ReduxProvider({children}:{children:React.ReactNode}){
 
@@ -11,5 +12,9 @@ export function ReduxProvider({children}:{children:React.ReactNode}){
         store.dispatch(loadUserFromStorage());
     },[])
     
-    return <Provider store={store}>{children}</Provider>
+    return(<>
+    
+        <ToastContainer />
+        <Provider store={store}>{children}</Provider>
+        </>)
 }
